@@ -1,0 +1,7 @@
+{
+    "name": "api",
+    "scripts": {
+      "dev": "wgo run .",
+      "build": "go build -o dist/api ."
+    }
+  }
