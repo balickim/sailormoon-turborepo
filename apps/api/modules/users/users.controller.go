@@ -14,15 +14,22 @@ type UserController struct {
 }
 
 func (uc *UserController) InitializeRoutes(router fiber.Router) {
-	router.Post("/users", middlewares.ValidationMiddleware(reflect.TypeOf(dtos.CreateUserDto{})), uc.createUser)
-	router.Get("/users", uc.getAllUsers)
+	router.Post(
+		"/users",
+		middlewares.ValidationMiddleware(reflect.TypeOf(dtos.CreateUserDto{})),
+		uc.createUser,
+	)
+	router.Get(
+		"/users",
+		uc.getAllUsers,
+	)
 }
 
 func (uc *UserController) createUser(c *fiber.Ctx) error {
 	dto := c.Locals("validatedData").(*dtos.CreateUserDto)
-	user, err := uc.Service.CreateUser(dto.Name, dto.Email)
+	user, err := uc.Service.CreateUser(dto.Name, dto.Email, dto.Password)
 	if err != nil {
-		return c.Status(fiber.StatusConflict).JSON(fiber.Map{"error": "Failed to create user"})
+		return c.Status(fiber.StatusConflict).JSON(fiber.Map{"error": err.Error()})
 	}
 	return c.Status(fiber.StatusCreated).JSON(utils.FormatSuccessResponse(user, fiber.StatusCreated))
 }

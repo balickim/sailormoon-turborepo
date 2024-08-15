@@ -1,11 +1,12 @@
 import Versions from './components/Versions'
 import electronLogo from './assets/electron.svg'
+import { isElectron } from './utils/electron'
 
 function App(): JSX.Element {
   const ipcHandle = (): void => window.electron.ipcRenderer.send('ping')
 
   const test = (): void => {
-    fetch('http://127.0.0.1:3000/api/users').then(res => res.text())
+    fetch('http://127.0.0.1:3000/api/users').then((res) => res.text())
   }
 
   return (
@@ -37,7 +38,8 @@ function App(): JSX.Element {
           </a>
         </div>
       </div>
-      <Versions />
+
+      {isElectron() ? <Versions /> : null}
     </>
   )
 }
