@@ -4,9 +4,6 @@
   "compilerOptions": {
     "composite": true,
     "types": ["electron-vite/node"],
-    // "module": "NodeNext",
-    "moduleResolution": "Bundler",
-    // "esModuleInterop": true,
-    // "allowSyntheticDefaultImports": true
+    "moduleResolution": "Bundler"
   }
 }
