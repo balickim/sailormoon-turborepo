@@ -1,7 +1,8 @@
 {
-    "name": "api",
-    "scripts": {
-      "dev": "wgo run .",
-      "build": "go build -o dist/api ."
-    }
+  "name": "api",
+  "scripts": {
+    "dev:web": "wgo run .",
+    "dev:electron": "wgo run .",
+    "build": "go build -o dist/api ."
   }
+}
