@@ -8,5 +8,8 @@ export default defineConfig({
     outDir: path.resolve(__dirname, 'dist-web'),
     emptyOutDir: true
   },
-  plugins: [react()]
+  plugins: [react()],
+  css: {
+    postcss: path.resolve(__dirname, 'postcss.config.js')
+  }
 })

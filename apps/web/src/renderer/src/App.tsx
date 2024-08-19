@@ -11,6 +11,9 @@ function App(): JSX.Element {
 
   return (
     <>
+      <div className="bg-red-500 text-white p-4">
+        <h1>Hello Tailwind!</h1>
+      </div>
       <img alt="logo" className="logo" src={electronLogo} />
       <div className="creator">Powered by electron-vite</div>
       <div className="text">
