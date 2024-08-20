@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import { TanStackRouterVite } from '@tanstack/router-plugin/vite'
 import path from 'path'
 
 export default defineConfig({
@@ -8,8 +9,13 @@ export default defineConfig({
     outDir: path.resolve(__dirname, 'dist-web'),
     emptyOutDir: true
   },
-  plugins: [react()],
-  css: {
-    postcss: path.resolve(__dirname, 'postcss.config.js')
+  plugins: [
+    react(),
+    TanStackRouterVite({ routesDirectory: path.resolve(__dirname, 'src/renderer/src/routes') })
+  ],
+  resolve: {
+    alias: {
+      '@renderer': path.resolve(__dirname, 'src/renderer/src')
+    }
   }
 })
