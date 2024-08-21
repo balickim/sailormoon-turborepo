@@ -2,7 +2,6 @@ package users
 
 import (
 	"sailormoon/backend/database"
-	"sailormoon/backend/modules/users/entities"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -18,7 +17,7 @@ func SetupTestDB(t *testing.T) *gorm.DB {
 		t.Fatalf("Failed to open test database: %v", err)
 	}
 
-	err = db.AutoMigrate(&entities.UsersEntity{})
+	err = db.AutoMigrate(&database.UsersEntity{})
 	if err != nil {
 		t.Fatalf("Failed to migrate test database: %v", err)
 	}

@@ -4,7 +4,6 @@ import (
 	"log"
 	"sailormoon/backend/database"
 	"sailormoon/backend/modules/users"
-	"sailormoon/backend/modules/users/entities"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -16,12 +15,15 @@ func main() {
 	}
 
 	if err := database.DB.AutoMigrate(
-		&entities.UsersEntity{},
+		&database.UsersEntity{},
+		&database.SlipsEntity{},
+		&database.BoatsEntity{},
 	); err != nil {
 		log.Fatalf("Auto-migration failed: %v", err)
 	}
 
 	app := fiber.New()
+
 	app.Use(cors.New())
 
 	userService := &users.UserService{}
