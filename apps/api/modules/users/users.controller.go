@@ -3,7 +3,6 @@ package users
 import (
 	"reflect"
 	"sailormoon/backend/middlewares"
-	"sailormoon/backend/modules/users/dtos"
 	"sailormoon/backend/utils"
 
 	"github.com/gofiber/fiber/v2"
@@ -16,7 +15,7 @@ type UserController struct {
 func (uc *UserController) InitializeRoutes(router fiber.Router) {
 	router.Post(
 		"/users",
-		middlewares.ValidationMiddleware(reflect.TypeOf(dtos.CreateUserDto{})),
+		middlewares.ValidationMiddleware(reflect.TypeOf(CreateUserDto{})),
 		uc.createUser,
 	)
 	router.Get(
@@ -26,7 +25,7 @@ func (uc *UserController) InitializeRoutes(router fiber.Router) {
 }
 
 func (uc *UserController) createUser(c *fiber.Ctx) error {
-	dto := c.Locals("validatedData").(*dtos.CreateUserDto)
+	dto := c.Locals("validatedData").(*CreateUserDto)
 	user, err := uc.Service.CreateUser(dto.Name, dto.Email, dto.Password)
 	if err != nil {
 		return c.Status(fiber.StatusConflict).JSON(fiber.Map{"error": err.Error()})
