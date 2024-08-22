@@ -1,8 +1,8 @@
 {
   "name": "api",
   "scripts": {
-    "dev:web": "wgo run .",
-    "dev:electron": "wgo run .",
+    "dev:web": "trap 'kill %1' SIGINT; wgo run . & wait",
+    "dev:electron": "trap 'kill %1' SIGINT; wgo run . & wait",
     "build": "go build -o dist/api ."
   }
 }

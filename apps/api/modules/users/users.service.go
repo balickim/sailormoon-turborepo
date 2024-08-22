@@ -20,7 +20,7 @@ func (s *UserService) CreateUser(name, email, password string) (database.UsersEn
 		return database.UsersEntity{}, err
 	}
 
-	user := database.UsersEntity{Name: name, Email: email, Password: hashedPassword}
+	user := database.UsersEntity{FirstName: name, Email: email, Password: hashedPassword}
 	err = database.DB.Create(&user).Error
 	if err != nil {
 		return database.UsersEntity{}, utils.HandleDBError(err)

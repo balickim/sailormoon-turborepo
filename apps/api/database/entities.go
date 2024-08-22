@@ -7,7 +7,6 @@ import (
 // UsersEntity represents users of the marina.
 type UsersEntity struct {
 	gorm.Model
-	Name        string       `json:"name"`
 	Email       string       `json:"email" gorm:"unique"`
 	Password    string       `json:"-"` // Don't expose the password in JSON responses
 	LastName    string       `json:"last_name"`
@@ -28,8 +27,7 @@ func (UsersEntity) TableName() string {
 // SlipsEntity represents parking spots for boats in the marina.
 type SlipsEntity struct {
 	gorm.Model
-	Number     string       `json:"number" gorm:"unique"`
-	Size       string       `json:"size"`
+	Number     int          `json:"number" gorm:"unique"`
 	IsOccupied bool         `json:"is_occupied"`
 	Notes      string       `json:"notes"`
 	BoatID     *uint        `json:"boat_id"`
