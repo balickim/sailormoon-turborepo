@@ -2,7 +2,9 @@ package main
 
 import (
 	"log"
+	"math/rand"
 	"sailormoon/backend/database"
+	"time"
 
 	"github.com/bxcodec/faker/v4"
 	"github.com/joho/godotenv"
@@ -10,12 +12,19 @@ import (
 )
 
 const (
-	HOW_MANY_USERS = 2
-	HOW_MANY_SLIPS = 1000
+	HOW_MANY_USERS     = 100
+	HOW_MANY_SLIPS     = 1000
+	HOW_MANY_BOATS     = 100
+	MIN_USERS_PER_BOAT = 20
+	MAX_USERS_PER_BOAT = 50
+	MIN_SLIPS_PER_BOAT = 10
+	MAX_SLIPS_PER_BOAT = 30
 )
 
 func Seed(db *gorm.DB) {
 	tx := db.Begin()
+
+	rand.Seed(time.Now().UnixNano())
 
 	var users []database.UsersEntity
 	for i := 0; i < HOW_MANY_USERS; i++ {
@@ -52,7 +61,21 @@ func Seed(db *gorm.DB) {
 		slips = append(slips, slip)
 	}
 
-	for i := 0; i < HOW_MANY_SLIPS; i++ {
+	for i := 0; i < HOW_MANY_BOATS; i++ {
+		// Select a random number of users for this boat
+		numUsers := rand.Intn(MAX_USERS_PER_BOAT-MIN_USERS_PER_BOAT+1) + MIN_USERS_PER_BOAT
+		boatUsers := []*database.UsersEntity{}
+		for j := 0; j < numUsers; j++ {
+			boatUsers = append(boatUsers, &users[rand.Intn(len(users))])
+		}
+
+		// Select a random number of slips for this boat
+		numSlips := rand.Intn(MAX_SLIPS_PER_BOAT-MIN_SLIPS_PER_BOAT+1) + MIN_SLIPS_PER_BOAT
+		boatSlips := []*database.SlipsEntity{}
+		for j := 0; j < numSlips; j++ {
+			boatSlips = append(boatSlips, &slips[rand.Intn(len(slips))])
+		}
+
 		boat := database.BoatsEntity{
 			Name:   faker.Name(),
 			Type:   faker.Word(),
@@ -60,8 +83,8 @@ func Seed(db *gorm.DB) {
 			Width:  faker.Word(),
 			Weight: faker.Word(),
 			Draft:  faker.Word(),
-			Owners: []*database.UsersEntity{&users[i%len(users)]},
-			Slips:  []*database.SlipsEntity{&slips[i%len(slips)]},
+			Owners: boatUsers,
+			Slips:  boatSlips,
 			Notes:  faker.Sentence(),
 		}
 		if err := tx.Create(&boat).Error; err != nil {
