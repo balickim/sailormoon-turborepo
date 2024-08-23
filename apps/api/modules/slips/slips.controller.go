@@ -13,7 +13,7 @@ type SlipsController struct {
 
 func (controller *SlipsController) InitializeRoutes(router fiber.Router) {
 	router.Get(
-		"/slips",
+		"/",
 		controller.getSlips,
 	)
 }

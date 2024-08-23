@@ -14,12 +14,12 @@ type UserController struct {
 
 func (uc *UserController) InitializeRoutes(router fiber.Router) {
 	router.Post(
-		"/users",
+		"/",
 		middlewares.ValidationMiddleware(reflect.TypeOf(CreateUserDto{})),
 		uc.createUser,
 	)
 	router.Get(
-		"/users",
+		"/",
 		uc.getAllUsers,
 	)
 }
