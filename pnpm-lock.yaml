@@ -28,9 +28,27 @@ importers:
       '@electron-toolkit/utils':
         specifier: ^3.0.0
         version: 3.0.0(electron@31.3.1)
+      '@tanstack/react-query':
+        specifier: ^5.52.0
+        version: 5.52.0(react@18.3.1)
+      '@tanstack/react-query-devtools':
+        specifier: ^5.52.0
+        version: 5.52.0(@tanstack/react-query@5.52.0(react@18.3.1))(react@18.3.1)
+      '@tanstack/react-router-with-query':
+        specifier: ^1.49.2
+        version: 1.49.2(@tanstack/react-query@5.52.0(react@18.3.1))(@tanstack/react-router@1.47.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       electron-updater:
         specifier: ^6.1.7
         version: 6.2.1
+      formik:
+        specifier: ^2.4.6
+        version: 2.4.6(react@18.3.1)
+      zod:
+        specifier: ^3.23.8
+        version: 3.23.8
+      zod-formik-adapter:
+        specifier: ^1.3.0
+        version: 1.3.0(formik@2.4.6(react@18.3.1))(zod@3.23.8)
     devDependencies:
       '@electron-toolkit/eslint-config-prettier':
         specifier: ^2.0.0
@@ -776,6 +794,32 @@ packages:
     resolution: {integrity: sha512-n4XXInV9irIq0obRvINIkESkGk280Q+xkIIbswmM0z9nAu2wsIRZNvlmPrtYh6bgNWtItOWWoihFUjLTW8g6Jg==}
     engines: {node: '>=12'}
 
+  '@tanstack/query-core@5.52.0':
+    resolution: {integrity: sha512-U1DOEgltjUwalN6uWYTewSnA14b+tE7lSylOiASKCAO61ENJeCq9VVD/TXHA6O5u9+6v5+UgGYBSccTKDoyMqw==}
+
+  '@tanstack/query-devtools@5.51.16':
+    resolution: {integrity: sha512-ajwuq4WnkNCMj/Hy3KR8d3RtZ6PSKc1dD2vs2T408MdjgKzQ3klVoL6zDgVO7X+5jlb5zfgcO3thh4ojPhfIaw==}
+
+  '@tanstack/react-query-devtools@5.52.0':
+    resolution: {integrity: sha512-oq8bDxMQ95edOlcWFaGsnSFzH11s06M1uiNiLtgsm+UG6Y5w+K6BJp0GeXN8q7sBNVBw/WPyeFdUH8rj9RT2Aw==}
+    peerDependencies:
+      '@tanstack/react-query': ^5.52.0
+      react: ^18 || ^19
+
+  '@tanstack/react-query@5.52.0':
+    resolution: {integrity: sha512-T8tLZdPEopSD3A1EBZ/sq7WkI76pKLKKiT82F486K8wf26EPgYCdeiSnJfuayssdQjWwLQMQVl/ROUBNmlWgCQ==}
+    peerDependencies:
+      react: ^18.0.0
+
+  '@tanstack/react-router-with-query@1.49.2':
+    resolution: {integrity: sha512-k/3GeV1yPupHPhmCei/PjwZyAzPqyUZG5yYeeuMwQeyJrRH9Djc4CG40JjxR3mj2bNFmkytabBOUhr4KzY0QKw==}
+    engines: {node: '>=12'}
+    peerDependencies:
+      '@tanstack/react-query': '>=5.49.2'
+      '@tanstack/react-router': '>=1.43.2'
+      react: '>=18'
+      react-dom: '>=18'
+
   '@tanstack/react-router@1.47.1':
     resolution: {integrity: sha512-pHV6jgUlTLVyqD4/pARvOYFVI3XT1Qx7m+cCGTMkM8Jw/4YHFA4hQI7VFjvEq8CpfTvVYP1lzdQVly6xYV8aag==}
     engines: {node: '>=12'}
@@ -875,6 +919,9 @@ packages:
 
   '@types/glob@7.2.0':
     resolution: {integrity: sha512-ZUxbzKl0IfJILTS6t7ip5fQQM/J3TJYubDm3nMbgubNNYS62eXeUpoLUC8/7fJNiFYHTrGPQn7hspDUzIHX3UA==}
+
+  '@types/hoist-non-react-statics@3.3.5':
+    resolution: {integrity: sha512-SbcrWzkKBw2cdwRTwQAswfpB9g9LJWfjtUeW/jvNwbhC8cpmmNYVePa+ncbUe0rGTQ7G3Ff6mYUN2VMfLVr+Sg==}
 
   '@types/http-cache-semantics@4.0.4':
     resolution: {integrity: sha512-1m0bIFVc7eJWyve9S0RnuRgcQqF/Xd5QsUZAZeQFr1Q3/p9JWoQQEqmVy+DPTNpGXwhgIetAoYF8JSc33q29QA==}
@@ -1705,6 +1752,10 @@ packages:
   deep-is@0.1.4:
     resolution: {integrity: sha512-oIPzksmTg4/MriiaYGO+okXDT7ztn/w3Eptv/+gSIdMdKsJo0u4CfYNFJPy+4SKMuCqGw2wxnA+URMg3t8a/bQ==}
 
+  deepmerge@2.2.1:
+    resolution: {integrity: sha512-R9hc1Xa/NOBi9WRVUWg19rl1UB7Tt4kuPd+thNJgFZoxXsTz7ncaPaeIm+40oSGuP33DfMb4sZt1QIGiJzC4EA==}
+    engines: {node: '>=0.10.0'}
+
   default-browser-id@3.0.0:
     resolution: {integrity: sha512-OZ1y3y0SqSICtE8DE4S8YOE9UZOJ8wO16fKWVP5J1Qz42kV9jcnMVFrEE/noXb/ss3Q4pZIH79kxofzyNNtUNA==}
     engines: {node: '>=12'}
@@ -2228,6 +2279,11 @@ packages:
     resolution: {integrity: sha512-ETEklSGi5t0QMZuiXoA/Q6vcnxcLQP5vdugSpuAyi6SVGi2clPPp+xgEhuMaHC+zGgn31Kd235W35f7Hykkaww==}
     engines: {node: '>= 6'}
 
+  formik@2.4.6:
+    resolution: {integrity: sha512-A+2EI7U7aG296q2TLGvNapDNTZp1khVt5Vk0Q/fyfSROss0V/V6+txt2aJnwEos44IxTCW/LYAi/zgWzlevj+g==}
+    peerDependencies:
+      react: '>=16.8.0'
+
   fraction.js@4.3.7:
     resolution: {integrity: sha512-ZsDfxO51wGAXREY55a7la9LScWpwv9RxIrYABrlvOFBlH/ShPnrtsXeuUIfXKKOVicNxQ+o8JTbJvjS4M89yew==}
 
@@ -2432,6 +2488,9 @@ packages:
 
   header-case@1.0.1:
     resolution: {integrity: sha512-i0q9mkOeSuhXw6bGgiQCCBgY/jlZuV/7dZXyZ9c6LcBrqwvT8eT719E9uxE5LiZftdl+z81Ugbg/VvXV4OJOeQ==}
+
+  hoist-non-react-statics@3.3.2:
+    resolution: {integrity: sha512-/gGivxi8JPKWNm/W0jSmzcMPpfpPLc3dY/6GxhX2hQ9iGj3aDfklV4ET7NjKpSinLpJ5vafa9iiGIEZg10SfBw==}
 
   hosted-git-info@2.8.9:
     resolution: {integrity: sha512-mxIDAb9Lsm6DoOJ7xH+5+X4y1LU/4Hi50L9C5sIswK3JzULS4bwk1FvjdBgvYR4bzT4tuUQiC15FE2f5HbLvYw==}
@@ -2843,6 +2902,9 @@ packages:
   locate-path@6.0.0:
     resolution: {integrity: sha512-iPZK6eYjbxRu3uB4/WZ3EsEIMJFMqAoopl3R+zuq0UjcAm/MO6KCweDgPfP3elTztoKP3KtnVHxTn2NHBSDVUw==}
     engines: {node: '>=10'}
+
+  lodash-es@4.17.21:
+    resolution: {integrity: sha512-mKnC+QJ9pWVzv+C4/U3rRsHapFfHvQFoFB92e52xeyGMcX6/OlIl78je1u8vePzYZSkkogMPJ2yjxxsb89cxyw==}
 
   lodash.defaults@4.2.0:
     resolution: {integrity: sha512-qjxPLHd3r5DnsdGacqOMU6pb/avJzdh9tFX2ymgoZE27BmjXrNy/y4LoaiTeAb+O3gL8AfpJGtqfX/ae2leYYQ==}
@@ -3372,6 +3434,9 @@ packages:
     resolution: {integrity: sha512-5m4nQKp+rZRb09LNH59GM4BxTh9251/ylbKIbpe7TpGxfJ+9kv6BLkLBXIjjspbgbnIBNqlI23tRnTWT0snUIw==}
     peerDependencies:
       react: ^18.3.1
+
+  react-fast-compare@2.0.4:
+    resolution: {integrity: sha512-suNP+J1VU1MWFKcyt7RtjiSWUjvidmQSlqu+eHslq+342xCbGTYmC0mEhPCOHxlW0CywylOC1u2DFAT+bv4dBw==}
 
   react-is@16.13.1:
     resolution: {integrity: sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==}
@@ -4214,6 +4279,12 @@ packages:
     resolution: {integrity: sha512-9qv4rlDiopXg4E69k+vMHjNN63YFMe9sZMrdlvKnCjlCRWeCBswPPMPUfx+ipsAWq1LXHe70RcbaHdJJpS6hyQ==}
     engines: {node: '>= 10'}
 
+  zod-formik-adapter@1.3.0:
+    resolution: {integrity: sha512-qWsVwRYqpRod5BL35pRXHD6UOugiyaEyLPO04rCN/uKTCFCR+VElPEG26+3wNrxGP7y5XmJM+4/0MrABnRYZrw==}
+    peerDependencies:
+      formik: ^2.2.9
+      zod: ^3.22.4
+
   zod@3.23.8:
     resolution: {integrity: sha512-XBx9AXhXktjUqnepgTiE5flcKIYWi/rme0Eaj+5Y0lftuGBq+jyRu/md4WnuxqgP1ubdpNCsYEYPxrzVHD8d6g==}
 
@@ -4852,6 +4923,28 @@ snapshots:
 
   '@tanstack/history@1.45.3': {}
 
+  '@tanstack/query-core@5.52.0': {}
+
+  '@tanstack/query-devtools@5.51.16': {}
+
+  '@tanstack/react-query-devtools@5.52.0(@tanstack/react-query@5.52.0(react@18.3.1))(react@18.3.1)':
+    dependencies:
+      '@tanstack/query-devtools': 5.51.16
+      '@tanstack/react-query': 5.52.0(react@18.3.1)
+      react: 18.3.1
+
+  '@tanstack/react-query@5.52.0(react@18.3.1)':
+    dependencies:
+      '@tanstack/query-core': 5.52.0
+      react: 18.3.1
+
+  '@tanstack/react-router-with-query@1.49.2(@tanstack/react-query@5.52.0(react@18.3.1))(@tanstack/react-router@1.47.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+    dependencies:
+      '@tanstack/react-query': 5.52.0(react@18.3.1)
+      '@tanstack/react-router': 1.47.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+
   '@tanstack/react-router@1.47.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
       '@tanstack/history': 1.45.3
@@ -5003,6 +5096,11 @@ snapshots:
     dependencies:
       '@types/minimatch': 5.1.2
       '@types/node': 20.14.15
+
+  '@types/hoist-non-react-statics@3.3.5':
+    dependencies:
+      '@types/react': 18.3.3
+      hoist-non-react-statics: 3.3.2
 
   '@types/http-cache-semantics@4.0.4': {}
 
@@ -6061,6 +6159,8 @@ snapshots:
 
   deep-is@0.1.4: {}
 
+  deepmerge@2.2.1: {}
+
   default-browser-id@3.0.0:
     dependencies:
       bplist-parser: 0.2.0
@@ -6905,6 +7005,18 @@ snapshots:
       combined-stream: 1.0.8
       mime-types: 2.1.35
 
+  formik@2.4.6(react@18.3.1):
+    dependencies:
+      '@types/hoist-non-react-statics': 3.3.5
+      deepmerge: 2.2.1
+      hoist-non-react-statics: 3.3.2
+      lodash: 4.17.21
+      lodash-es: 4.17.21
+      react: 18.3.1
+      react-fast-compare: 2.0.4
+      tiny-warning: 1.0.3
+      tslib: 2.6.2
+
   fraction.js@4.3.7: {}
 
   fs-constants@1.0.0: {}
@@ -7154,6 +7266,10 @@ snapshots:
     dependencies:
       no-case: 2.3.2
       upper-case: 1.1.3
+
+  hoist-non-react-statics@3.3.2:
+    dependencies:
+      react-is: 16.13.1
 
   hosted-git-info@2.8.9: {}
 
@@ -7558,6 +7674,8 @@ snapshots:
   locate-path@6.0.0:
     dependencies:
       p-locate: 5.0.0
+
+  lodash-es@4.17.21: {}
 
   lodash.defaults@4.2.0: {}
 
@@ -8085,6 +8203,8 @@ snapshots:
       loose-envify: 1.4.0
       react: 18.3.1
       scheduler: 0.23.2
+
+  react-fast-compare@2.0.4: {}
 
   react-is@16.13.1: {}
 
@@ -9092,5 +9212,10 @@ snapshots:
       archiver-utils: 3.0.4
       compress-commons: 4.1.2
       readable-stream: 3.6.2
+
+  zod-formik-adapter@1.3.0(formik@2.4.6(react@18.3.1))(zod@3.23.8):
+    dependencies:
+      formik: 2.4.6(react@18.3.1)
+      zod: 3.23.8
 
   zod@3.23.8: {}

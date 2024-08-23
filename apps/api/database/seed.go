@@ -8,26 +8,8 @@ import (
 )
 
 func Seed(db *gorm.DB) {
-	var HOW_MANY_SLIPS = 10
+	var HOW_MANY_SLIPS = 1000
 
-	// Seed Slips with faker
-	slips := []SlipsEntity{}
-	for i := 0; i < HOW_MANY_SLIPS; i++ {
-		slip := SlipsEntity{
-			Number:     i,
-			IsOccupied: true,
-			Notes:      faker.Sentence(),
-		}
-		slips = append(slips, slip)
-	}
-
-	for _, slip := range slips {
-		if err := db.Where("number = ?", slip.Number).FirstOrCreate(&slip).Error; err != nil {
-			log.Fatalf("Failed to seed slips: %v", err)
-		}
-	}
-
-	// Seed Users with faker
 	users := []UsersEntity{}
 	for i := 0; i < 2; i++ {
 		user := UsersEntity{
@@ -41,33 +23,42 @@ func Seed(db *gorm.DB) {
 			CompanyName: faker.Word(),
 			Notes:       faker.Sentence(),
 		}
+		if err := db.Create(&user).Error; err != nil {
+			log.Fatalf("Failed to seed users: %v", err)
+		}
 		users = append(users, user)
 	}
 
 	for _, user := range users {
-		if err := db.Where("email = ?", user.Email).FirstOrCreate(&user).Error; err != nil {
-			log.Fatalf("Failed to seed users: %v", err)
-		}
+		log.Printf("Created user: %s, ID: %d", user.Email, user.ID)
 	}
 
-	// Seed Boats with faker
-	boats := []BoatsEntity{}
-	for i := 0; i < 2; i++ {
+	slips := []SlipsEntity{}
+	for i := 0; i < HOW_MANY_SLIPS; i++ {
+		slip := SlipsEntity{
+			Number:     i + 1,
+			IsOccupied: true,
+			Notes:      faker.Sentence(),
+		}
+		if err := db.Create(&slip).Error; err != nil {
+			log.Fatalf("Failed to seed slips: %v", err)
+		}
+		slips = append(slips, slip)
+	}
+
+	for i := 0; i < HOW_MANY_SLIPS; i++ {
 		boat := BoatsEntity{
-			Name:    faker.Name(),
-			Type:    faker.Word(),
-			Length:  faker.Word(),
-			Width:   faker.Word(),
-			Weight:  faker.Word(),
-			Draft:   faker.Word(),
-			OwnerID: users[i].ID,
-			Notes:   faker.Sentence(),
+			Name:   faker.Name(),
+			Type:   faker.Word(),
+			Length: faker.Word(),
+			Width:  faker.Word(),
+			Weight: faker.Word(),
+			Draft:  faker.Word(),
+			Owners: []*UsersEntity{&users[i%len(users)]},
+			Slips:  []*SlipsEntity{&slips[i%len(slips)]},
+			Notes:  faker.Sentence(),
 		}
-		boats = append(boats, boat)
-	}
-
-	for _, boat := range boats {
-		if err := db.Where("name = ?", boat.Name).FirstOrCreate(&boat).Error; err != nil {
+		if err := db.Create(&boat).Error; err != nil {
 			log.Fatalf("Failed to seed boats: %v", err)
 		}
 	}
