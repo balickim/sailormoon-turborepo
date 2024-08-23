@@ -86,9 +86,14 @@ export function Slips() {
   const slipsApi = new SlipsApi()
 
   const [sorting, setSorting] = useState<SortingState>([])
+  const [pagination, setPagination] = useState({
+    pageIndex: 0,
+    pageSize: 10
+  })
+  const STORAGE_VERSION = '1.0'
 
-  const { data, refetch } = useQuery({
-    queryKey: ['getSlips', sorting],
+  const { data, refetch, isFetching } = useQuery({
+    queryKey: ['getSlips', sorting, pagination],
     queryFn: () => {
       const sort_by = sorting[0]?.id
       const sort_order = sorting[0]?.desc ? 'desc' : 'asc'
@@ -99,8 +104,8 @@ export function Slips() {
         sort_by?: string
         sort_order?: 'asc' | 'desc'
       } = {
-        page: 1,
-        page_size: 100
+        page: pagination.pageIndex + 1,
+        page_size: pagination.pageSize
       }
 
       if (sort_by) {
@@ -147,16 +152,22 @@ export function Slips() {
         accessorKey: 'notes',
         header: 'Notatki',
         id: 'notes',
+        cell: (info) => info.getValue(),
         size: 500
       }
     ],
     []
   )
 
-  const storedColumnOrder = JSON.parse(localStorage.getItem('columnOrder') || 'null')
-  const [columnOrder, setColumnOrder] = useState<string[]>(
-    storedColumnOrder || defaultColumns.map((col) => col.id)
-  )
+  const loadColumnOrder = () => {
+    const stored = JSON.parse(localStorage.getItem('columnOrder') || 'null')
+    if (stored && stored.version === STORAGE_VERSION) {
+      return stored.columnOrder
+    }
+    return defaultColumns.map((col) => col.id as string)
+  }
+
+  const [columnOrder, setColumnOrder] = useState<string[]>(loadColumnOrder())
 
   useEffect(() => {
     if (data) {
@@ -165,7 +176,13 @@ export function Slips() {
   }, [data])
 
   useEffect(() => {
-    localStorage.setItem('columnOrder', JSON.stringify(columnOrder))
+    localStorage.setItem(
+      'columnOrder',
+      JSON.stringify({
+        version: STORAGE_VERSION,
+        columnOrder: columnOrder
+      })
+    )
   }, [columnOrder])
 
   const table = useReactTable({
@@ -175,23 +192,29 @@ export function Slips() {
     getSortedRowModel: getSortedRowModel(),
     state: {
       columnOrder,
-      sorting
+      sorting,
+      pagination
     },
     onColumnOrderChange: setColumnOrder,
     onSortingChange: (updatedSorting) => {
       setSorting(updatedSorting)
+      setPagination({ pageIndex: 0, pageSize: pagination.pageSize }) // Reset to first page on sort
       refetch()
     },
+    onPaginationChange: setPagination,
+    manualPagination: true,
+    pageCount: data?.meta.total ?? -1,
     debugTable: true
   })
 
-  // Handle the drag & drop reordering of columns
   function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event
+    console.log('Drag end:', active?.id, 'over:', over?.id)
     if (active && over && active.id !== over.id) {
       setColumnOrder((columnOrder) => {
         const oldIndex = columnOrder.indexOf(active.id as string)
         const newIndex = columnOrder.indexOf(over.id as string)
+        console.log('Reordering:', oldIndex, 'to', newIndex)
         return arrayMove(columnOrder, oldIndex, newIndex)
       })
     }
@@ -203,43 +226,98 @@ export function Slips() {
     useSensor(KeyboardSensor, {})
   )
 
+  const resetToDefaultOrder = () => {
+    const defaultOrder = defaultColumns.map((col) => col.id as string)
+    setColumnOrder(defaultOrder)
+    localStorage.setItem(
+      'columnOrder',
+      JSON.stringify({
+        version: STORAGE_VERSION,
+        columnOrder: defaultOrder
+      })
+    )
+  }
+
   return (
-    <DndContext
-      collisionDetection={closestCenter}
-      modifiers={[restrictToHorizontalAxis]}
-      onDragEnd={handleDragEnd}
-      sensors={sensors}
-    >
-      <div className="p-2">
-        <table>
-          <thead>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id}>
-                <SortableContext items={columnOrder} strategy={horizontalListSortingStrategy}>
-                  {headerGroup.headers.map((header) => (
-                    <DraggableTableHeader key={header.id} header={header} />
-                  ))}
-                </SortableContext>
-              </tr>
-            ))}
-          </thead>
-          <tbody>
-            {table.getRowModel().rows.map((row) => (
-              <tr key={row.id}>
-                {row.getVisibleCells().map((cell) => (
-                  <SortableContext
-                    key={cell.id}
-                    items={columnOrder}
-                    strategy={horizontalListSortingStrategy}
-                  >
-                    <DragAlongCell key={cell.id} cell={cell} />
-                  </SortableContext>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
+    <>
+      <div className="pagination">
+        <button onClick={() => table.setPageIndex(0)} disabled={!table.getCanPreviousPage()}>
+          {'<<'}
+        </button>
+        <button onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>
+          {'<'}
+        </button>
+        <span>
+          Page{' '}
+          <strong>
+            {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
+          </strong>
+        </span>
+        <button onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
+          {'>'}
+        </button>
+        <button
+          onClick={() => table.setPageIndex(table.getPageCount() - 1)}
+          disabled={!table.getCanNextPage()}
+        >
+          {'>>'}
+        </button>
+        <select
+          value={table.getState().pagination.pageSize}
+          onChange={(e) => {
+            table.setPageSize(Number(e.target.value))
+          }}
+        >
+          {[10, 20, 30, 40, 50].map((pageSize) => (
+            <option key={pageSize} value={pageSize}>
+              Show {pageSize}
+            </option>
+          ))}
+        </select>
       </div>
-    </DndContext>
+
+      <button onClick={() => resetToDefaultOrder()}> Reset to default </button>
+      <DndContext
+        collisionDetection={closestCenter}
+        modifiers={[restrictToHorizontalAxis]}
+        onDragEnd={handleDragEnd}
+        sensors={sensors}
+      >
+        <div className="p-2">
+          {isFetching ? (
+            <div>Loading...</div>
+          ) : (
+            <table>
+              <thead>
+                {table.getHeaderGroups().map((headerGroup) => (
+                  <tr key={headerGroup.id}>
+                    <SortableContext items={columnOrder} strategy={horizontalListSortingStrategy}>
+                      {headerGroup.headers.map((header) => (
+                        <DraggableTableHeader key={header.id} header={header} />
+                      ))}
+                    </SortableContext>
+                  </tr>
+                ))}
+              </thead>
+              <tbody>
+                {table.getRowModel().rows.map((row) => (
+                  <tr key={row.id}>
+                    {row.getVisibleCells().map((cell) => (
+                      <SortableContext
+                        key={cell.id}
+                        items={columnOrder}
+                        strategy={horizontalListSortingStrategy}
+                      >
+                        <DragAlongCell key={cell.id} cell={cell} />
+                      </SortableContext>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
+      </DndContext>
+    </>
   )
 }
