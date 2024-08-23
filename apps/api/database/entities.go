@@ -8,7 +8,7 @@ import (
 type UsersEntity struct {
 	gorm.Model
 	Email       string         `json:"email" gorm:"unique"`
-	Password    string         `json:"-"` // Don't expose the password in JSON responses
+	Password    string         `json:"-"`
 	LastName    string         `json:"last_name"`
 	FirstName   string         `json:"first_name"`
 	Phone       string         `json:"phone"`
@@ -52,4 +52,12 @@ type BoatsEntity struct {
 
 func (BoatsEntity) TableName() string {
 	return "boats"
+}
+
+func Migrate(db *gorm.DB) error {
+	return db.AutoMigrate(
+		&UsersEntity{},
+		&SlipsEntity{},
+		&BoatsEntity{},
+	)
 }

@@ -3,6 +3,8 @@
   "scripts": {
     "dev:web": "trap 'kill %1' SIGINT; wgo run . & wait",
     "dev:electron": "trap 'kill %1' SIGINT; wgo run . & wait",
-    "build": "go build -o dist/api ."
+    "build": "go build -o dist/api .",
+    "db:migrate": "go run ./database/migrations/main.go",
+    "db:seed": "go run ./database/seeders/main.go"
   }
 }
