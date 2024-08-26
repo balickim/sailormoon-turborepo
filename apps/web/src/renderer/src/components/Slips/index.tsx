@@ -24,8 +24,6 @@ import { arrayMove, SortableContext, horizontalListSortingStrategy } from '@dnd-
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 
-import './index.css'
-
 const DraggableTableHeader = ({ header }) => {
   const { attributes, isDragging, listeners, setNodeRef, transform } = useSortable({
     id: header.column.id
@@ -38,12 +36,17 @@ const DraggableTableHeader = ({ header }) => {
     transition: 'width transform 0.2s ease-in-out',
     whiteSpace: 'nowrap',
     width: header.column.getSize(),
-    zIndex: isDragging ? 1 : 0
+    zIndex: isDragging ? 1 : 0,
+    borderWidth: '2px'
   }
 
   return (
     <th colSpan={header.colSpan} ref={setNodeRef} style={style}>
-      <div onClick={header.column.getToggleSortingHandler()} style={{ cursor: 'pointer' }}>
+      <div
+        onClick={header.column.getToggleSortingHandler()}
+        style={{ cursor: 'pointer' }}
+        className="flex justify-center gap-1"
+      >
         {header.isPlaceholder
           ? null
           : flexRender(header.column.columnDef.header, header.getContext())}
@@ -53,10 +56,10 @@ const DraggableTableHeader = ({ header }) => {
             desc: ' 🔽'
           }[header.column.getIsSorted() as string] ?? null}
         </span>
+        <button {...attributes} {...listeners}>
+          🟰
+        </button>
       </div>
-      <button {...attributes} {...listeners}>
-        🟰
-      </button>
     </th>
   )
 }
@@ -76,7 +79,7 @@ const DragAlongCell = ({ cell }) => {
   }
 
   return (
-    <td style={style} ref={setNodeRef}>
+    <td style={style} ref={setNodeRef} className="border-2 pl-3">
       {flexRender(cell.column.columnDef.cell, cell.getContext())}
     </td>
   )
@@ -123,13 +126,17 @@ export function Slips() {
   const defaultColumns = useMemo<ColumnDef<unknown>[]>(
     () => [
       {
-        accessorKey: 'number',
-        cell: (info) => info.getValue(),
         id: 'number',
-        size: 150
+        accessorKey: 'number',
+        header: 'Nr',
+        size: 50,
+        cell: (info) => info.getValue()
       },
       {
+        id: 'boats',
         accessorKey: 'boats',
+        header: 'Łodzie',
+        size: 300,
         cell: ({ getValue }) => {
           const boats = getValue() as Array<{ name: string; type: string }> | undefined
           return (
@@ -143,17 +150,14 @@ export function Slips() {
               )) || 'No boats'}
             </ul>
           )
-        },
-        header: 'Boats',
-        id: 'boats',
-        size: 300
+        }
       },
       {
+        id: 'notes',
         accessorKey: 'notes',
         header: 'Notatki',
-        id: 'notes',
-        cell: (info) => info.getValue(),
-        size: 500
+        size: 500,
+        cell: (info) => info.getValue()
       }
     ],
     []
@@ -287,8 +291,8 @@ export function Slips() {
           {isFetching ? (
             <div>Loading...</div>
           ) : (
-            <table>
-              <thead>
+            <table className="w-full border-2">
+              <thead className="bg-gray-100 h-16">
                 {table.getHeaderGroups().map((headerGroup) => (
                   <tr key={headerGroup.id}>
                     <SortableContext items={columnOrder} strategy={horizontalListSortingStrategy}>
