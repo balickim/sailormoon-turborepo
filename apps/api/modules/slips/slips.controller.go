@@ -1,6 +1,7 @@
 package slips
 
 import (
+	"encoding/json"
 	"math"
 	"sailormoon/backend/utils"
 
@@ -23,12 +24,23 @@ func (controller *SlipsController) getSlips(c *fiber.Ctx) error {
 	sortOrder := c.Query("sort_order", "asc")
 	page := c.QueryInt("page", 1)
 	pageSize := c.QueryInt("page_size", 10)
+	globalFilter := c.Query("global_filter", "")
+
+	var filters []Filter
+	filtersParam := c.Query("filters", "")
+	if filtersParam != "" {
+		if err := json.Unmarshal([]byte(filtersParam), &filters); err != nil {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid filters format"})
+		}
+	}
 
 	params := GetSlipsParams{
-		SortBy:    sortBy,
-		SortOrder: sortOrder,
-		Page:      page,
-		PageSize:  pageSize,
+		SortBy:       sortBy,
+		SortOrder:    sortOrder,
+		Page:         page,
+		PageSize:     pageSize,
+		Filters:      filters,
+		GlobalFilter: globalFilter,
 	}
 
 	slips, total, err := controller.Service.GetSlips(params)

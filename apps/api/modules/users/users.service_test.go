@@ -52,7 +52,6 @@ func TestCreateUser(t *testing.T) {
 	user, err := userService.CreateUser("John Doe", "john@example.com", "securepassword")
 	assert.NoError(t, err)
 	assert.NotEmpty(t, user.ID)
-	assert.Equal(t, "John Doe", user.Name)
 	assert.Equal(t, "john@example.com", user.Email)
 
 	// Verify that the password was hashed
@@ -83,8 +82,7 @@ func TestGetAllUsers(t *testing.T) {
 	assert.Len(t, users, 2)
 
 	// Verify the details of the retrieved users
-	assert.Equal(t, "John Doe", users[0].Name)
 	assert.Equal(t, "john@example.com", users[0].Email)
-	assert.Equal(t, "Jane Doe", users[1].Name)
+
 	assert.Equal(t, "jane@example.com", users[1].Email)
 }

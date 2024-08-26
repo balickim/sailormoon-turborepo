@@ -7,11 +7,18 @@ import (
 
 type SlipsService struct{}
 
+type Filter struct {
+	ID    string `json:"id"`
+	Value string `json:"value"`
+}
+
 type GetSlipsParams struct {
-	SortBy    string
-	SortOrder string
-	Page      int
-	PageSize  int
+	SortBy       string
+	SortOrder    string
+	Page         int
+	PageSize     int
+	Filters      []Filter `json:"filters"`
+	GlobalFilter string   `json:"global_filter"`
 }
 
 func (s *SlipsService) GetSlips(params GetSlipsParams) ([]database.SlipsEntity, int64, error) {
@@ -33,12 +40,30 @@ func (s *SlipsService) GetSlips(params GetSlipsParams) ([]database.SlipsEntity, 
 
 	offset := (params.Page - 1) * params.PageSize
 
-	if err := database.DB.Model(&database.SlipsEntity{}).Count(&totalRecords).Error; err != nil {
+	// Base query
+	query := database.DB.Model(&database.SlipsEntity{}).Preload("Boats").Preload("Boats.Owners").Preload("Boats.Slips")
+
+	// Apply global filter
+	if params.GlobalFilter != "" {
+		globalFilterValue := fmt.Sprintf("%%%s%%", params.GlobalFilter)
+		query = query.Where("number LIKE ? OR notes LIKE ?", globalFilterValue, globalFilterValue)
+	}
+
+	// Apply individual filters
+	for _, filter := range params.Filters {
+		if filter.ID != "" && filter.Value != "" {
+			filterValue := fmt.Sprintf("%%%s%%", filter.Value)
+			query = query.Where(fmt.Sprintf("%s LIKE ?", filter.ID), filterValue)
+		}
+	}
+
+	// Get total count
+	if err := query.Count(&totalRecords).Error; err != nil {
 		return nil, 0, err
 	}
 
-	if err := database.DB.Preload("Boats").Preload("Boats.Owners").Preload("Boats.Slips").
-		Order(fmt.Sprintf("%s %s", params.SortBy, params.SortOrder)).
+	// Apply sorting, pagination, and execute the query
+	if err := query.Order(fmt.Sprintf("%s %s", params.SortBy, params.SortOrder)).
 		Limit(params.PageSize).
 		Offset(offset).
 		Find(&slips).Error; err != nil {

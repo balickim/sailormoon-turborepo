@@ -1,6 +1,8 @@
-import { CSSProperties, useEffect, useState, useMemo } from 'react'
+import { CSSProperties, useEffect, useState, useMemo, useRef } from 'react'
 import {
+  Column,
   ColumnDef,
+  ColumnFiltersState,
   flexRender,
   getCoreRowModel,
   getSortedRowModel,
@@ -23,6 +25,7 @@ import { restrictToHorizontalAxis } from '@dnd-kit/modifiers'
 import { arrayMove, SortableContext, horizontalListSortingStrategy } from '@dnd-kit/sortable'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
+import AddSlipDialog from './AddSlipDialog'
 
 const DraggableTableHeader = ({ header }) => {
   const { attributes, isDragging, listeners, setNodeRef, transform } = useSortable({
@@ -60,6 +63,11 @@ const DraggableTableHeader = ({ header }) => {
           🟰
         </button>
       </div>
+      {header.column.getCanFilter() ? (
+        <div>
+          <Filter column={header.column} />
+        </div>
+      ) : null}
     </th>
   )
 }
@@ -93,27 +101,28 @@ export function Slips() {
     pageIndex: 0,
     pageSize: 10
   })
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+  const [globalFilter, setGlobalFilter] = useState('')
+
   const STORAGE_VERSION = '1.0'
+  const dialogRef = useRef()
 
-  const { data, refetch, isFetching } = useQuery({
-    queryKey: ['getSlips', sorting, pagination],
+  const { data, refetch } = useQuery({
+    queryKey: ['getSlips', sorting, pagination, columnFilters, globalFilter],
     queryFn: () => {
-      const sort_by = sorting[0]?.id
-      const sort_order = sorting[0]?.desc ? 'desc' : 'asc'
-
-      const params: {
-        page: number
-        page_size: number
-        sort_by?: string
-        sort_order?: 'asc' | 'desc'
-      } = {
+      const params: Record<string, unknown> = {
         page: pagination.pageIndex + 1,
-        page_size: pagination.pageSize
+        page_size: pagination.pageSize,
+        global_filter: globalFilter
       }
 
-      if (sort_by) {
-        params.sort_by = sort_by
-        params.sort_order = sort_order
+      if (sorting.length > 0) {
+        params.sort_by = sorting[0].id
+        params.sort_order = sorting[0].desc ? 'desc' : 'asc'
+      }
+
+      if (columnFilters.length > 0) {
+        params.filters = columnFilters
       }
 
       return slipsApi.getSlips(params)
@@ -130,7 +139,8 @@ export function Slips() {
         accessorKey: 'number',
         header: 'Nr',
         size: 50,
-        cell: (info) => info.getValue()
+        cell: (info) => info.getValue(),
+        filterFn: 'equals'
       },
       {
         id: 'boats',
@@ -150,14 +160,19 @@ export function Slips() {
               )) || 'No boats'}
             </ul>
           )
-        }
+        },
+        filterFn: 'includesString'
       },
       {
         id: 'notes',
         accessorKey: 'notes',
         header: 'Notatki',
-        size: 500,
-        cell: (info) => info.getValue()
+        filterFn: 'includesString'
+      },
+      {
+        id: 'CreatedAt',
+        accessorKey: 'CreatedAt',
+        header: 'Utworzono'
       }
     ],
     []
@@ -197,15 +212,19 @@ export function Slips() {
     state: {
       columnOrder,
       sorting,
-      pagination
+      pagination,
+      columnFilters,
+      globalFilter
     },
     onColumnOrderChange: setColumnOrder,
     onSortingChange: (updatedSorting) => {
       setSorting(updatedSorting)
-      setPagination({ pageIndex: 0, pageSize: pagination.pageSize }) // Reset to first page on sort
+      setPagination({ pageIndex: 0, pageSize: pagination.pageSize })
       refetch()
     },
     onPaginationChange: setPagination,
+    onColumnFiltersChange: setColumnFilters,
+    onGlobalFilterChange: setGlobalFilter,
     manualPagination: true,
     pageCount: data?.meta.total ?? -1,
     debugTable: true
@@ -281,47 +300,71 @@ export function Slips() {
       </div>
 
       <button onClick={() => resetToDefaultOrder()}> Reset to default </button>
+      <div>
+        <input
+          value={globalFilter ?? ''}
+          onChange={(e) => setGlobalFilter(e.target.value)}
+          placeholder="Search all columns..."
+          className="p-2 font-lg shadow border border-block"
+        />
+      </div>
+
+      <button className="btn btn-primary" onClick={() => dialogRef.current?.open()}>
+        Add
+      </button>
       <DndContext
         collisionDetection={closestCenter}
         modifiers={[restrictToHorizontalAxis]}
         onDragEnd={handleDragEnd}
         sensors={sensors}
       >
-        <div className="p-2">
-          {isFetching ? (
-            <div>Loading...</div>
-          ) : (
-            <table className="w-full border-2">
-              <thead className="bg-gray-100 h-16">
-                {table.getHeaderGroups().map((headerGroup) => (
-                  <tr key={headerGroup.id}>
-                    <SortableContext items={columnOrder} strategy={horizontalListSortingStrategy}>
-                      {headerGroup.headers.map((header) => (
-                        <DraggableTableHeader key={header.id} header={header} />
-                      ))}
-                    </SortableContext>
-                  </tr>
-                ))}
-              </thead>
-              <tbody>
-                {table.getRowModel().rows.map((row) => (
-                  <tr key={row.id}>
-                    {row.getVisibleCells().map((cell) => (
-                      <SortableContext
-                        key={cell.id}
-                        items={columnOrder}
-                        strategy={horizontalListSortingStrategy}
-                      >
-                        <DragAlongCell key={cell.id} cell={cell} />
-                      </SortableContext>
+        <div className="w-full overflow-x-auto p-2">
+          <table className="min-w-full border-2">
+            <thead className="bg-gray-100 h-16">
+              {table.getHeaderGroups().map((headerGroup) => (
+                <tr key={headerGroup.id}>
+                  <SortableContext items={columnOrder} strategy={horizontalListSortingStrategy}>
+                    {headerGroup.headers.map((header) => (
+                      <DraggableTableHeader key={header.id} header={header} />
                     ))}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
+                  </SortableContext>
+                </tr>
+              ))}
+            </thead>
+            <tbody>
+              {table.getRowModel().rows.map((row) => (
+                <tr key={row.id}>
+                  {row.getVisibleCells().map((cell) => (
+                    <SortableContext
+                      key={cell.id}
+                      items={columnOrder}
+                      strategy={horizontalListSortingStrategy}
+                    >
+                      <DragAlongCell key={cell.id} cell={cell} />
+                    </SortableContext>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </DndContext>
+
+      <AddSlipDialog ref={dialogRef} />
     </>
+  )
+}
+
+function Filter({ column }: { column: Column<unknown, unknown> }) {
+  const columnFilterValue = column.getFilterValue()
+
+  return (
+    <input
+      type="text"
+      value={(columnFilterValue ?? '') as string}
+      onChange={(e) => column.setFilterValue(e.target.value)}
+      placeholder={`Search...`}
+      className="w-36 border shadow rounded"
+    />
   )
 }

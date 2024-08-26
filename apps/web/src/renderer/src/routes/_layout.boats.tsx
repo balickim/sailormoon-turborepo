@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import React from 'react'
 
-export const Route = createFileRoute('/about' as never)({
+export const Route = createFileRoute('/boats' as never)({
   component: Index
 })
 
