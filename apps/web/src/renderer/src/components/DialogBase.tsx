@@ -21,7 +21,7 @@ const DialogBase = forwardRef((props: IDialogBaseProps, ref) => {
       <DialogBackdrop className="fixed inset-0 backdrop-blur-sm" />
 
       <div className="fixed inset-0 flex w-screen items-center justify-center p-4">
-        <DialogPanel className="max-w-lg space-y-4 border bg-white p-12">
+        <DialogPanel className="max-w-lg space-y-4 border bg-white p-12 rounded-lg shadow-2xl">
           <DialogTitle className="font-bold">{props.title}</DialogTitle>
           <Description>{props.children}</Description>
           {props.cancel || props.ok ? (
