@@ -15,6 +15,8 @@ export function Slips() {
   })
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [globalFilter, setGlobalFilter] = useState('')
+  const [totalRows, setTotalRows] = useState(0)
+  const [tableData, setTableData] = useState<unknown[]>([])
 
   const STORAGE_VERSION = '1.0'
   const dialogRef = useRef()
@@ -41,8 +43,6 @@ export function Slips() {
     },
     refetchOnWindowFocus: true
   })
-
-  const [tableData, setTableData] = useState<unknown[]>([])
 
   const defaultColumns = useMemo<ColumnDef<unknown>[]>(
     () => [
@@ -103,6 +103,7 @@ export function Slips() {
   useEffect(() => {
     if (data) {
       setTableData(data.data)
+      setTotalRows(data.meta.total)
     }
   }, [data])
 
@@ -128,13 +129,31 @@ export function Slips() {
     )
   }
 
+  const handleSetColumnFilters = (filters: ColumnFiltersState) => {
+    setColumnFilters(filters)
+    setPagination((prev) => ({
+      ...prev,
+      pageIndex: 0
+    }))
+  }
+
+  const handleSetGlobalFilter = (filter: string) => {
+    setGlobalFilter(filter)
+    setPagination((prev) => ({
+      ...prev,
+      pageIndex: 0
+    }))
+  }
+
+  const pageCount = Math.ceil(totalRows / pagination.pageSize)
+
   return (
     <>
       <button onClick={() => resetToDefaultOrder()}> Reset to default </button>
       <div>
         <input
           value={globalFilter ?? ''}
-          onChange={(e) => setGlobalFilter(e.target.value)}
+          onChange={(e) => handleSetGlobalFilter(e.target.value)}
           placeholder="Search all columns..."
           className="p-2 font-lg shadow border border-block"
         />
@@ -154,10 +173,10 @@ export function Slips() {
         pagination={pagination}
         setPagination={setPagination}
         columnFilters={columnFilters}
-        setColumnFilters={setColumnFilters}
+        setColumnFilters={handleSetColumnFilters}
         globalFilter={globalFilter}
-        setGlobalFilter={setGlobalFilter}
-        pageCount={data?.meta.total ?? -1}
+        setGlobalFilter={handleSetGlobalFilter}
+        pageCount={pageCount}
         refetch={refetch}
       />
 

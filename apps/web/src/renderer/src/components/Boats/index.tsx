@@ -14,6 +14,8 @@ export function Boats() {
   })
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [globalFilter, setGlobalFilter] = useState('')
+  const [totalRows, setTotalRows] = useState(0)
+  const [tableData, setTableData] = useState<unknown[]>([])
 
   const queryKey = useMemo(() => {
     return ['getBoats', sorting, pagination, columnFilters, globalFilter]
@@ -41,6 +43,13 @@ export function Boats() {
     },
     refetchOnWindowFocus: true
   })
+
+  useEffect(() => {
+    if (data) {
+      setTableData(data.data)
+      setTotalRows(data.meta.total)
+    }
+  }, [data])
 
   const columns = useMemo<ColumnDef<unknown>[]>(
     () => [
@@ -108,10 +117,28 @@ export function Boats() {
     localStorage.setItem('boatsColumnOrder', JSON.stringify(columnOrder))
   }, [columnOrder])
 
+  const handleSetColumnFilters = (filters: ColumnFiltersState) => {
+    setColumnFilters(filters)
+    setPagination((prev) => ({
+      ...prev,
+      pageIndex: 0
+    }))
+  }
+
+  const handleSetGlobalFilter = (filter: string) => {
+    setGlobalFilter(filter)
+    setPagination((prev) => ({
+      ...prev,
+      pageIndex: 0
+    }))
+  }
+
+  const pageCount = Math.ceil(totalRows / pagination.pageSize)
+
   return (
     <TableBase
       columns={columns}
-      data={data?.data || []}
+      data={tableData}
       columnOrder={columnOrder}
       setColumnOrder={setColumnOrder}
       sorting={sorting}
@@ -119,10 +146,10 @@ export function Boats() {
       pagination={pagination}
       setPagination={setPagination}
       columnFilters={columnFilters}
-      setColumnFilters={setColumnFilters}
+      setColumnFilters={handleSetColumnFilters}
       globalFilter={globalFilter}
-      setGlobalFilter={setGlobalFilter}
-      pageCount={data?.meta.total ?? -1}
+      setGlobalFilter={handleSetGlobalFilter}
+      pageCount={pageCount}
       refetch={refetch}
     />
   )
