@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"sailormoon/backend/database"
+	"sailormoon/backend/modules/boats"
 	"sailormoon/backend/modules/slips"
 	"sailormoon/backend/modules/users"
 
@@ -32,9 +33,12 @@ func main() {
 	userController := &users.UserController{Service: userService}
 	slipsService := &slips.SlipsService{}
 	slipsController := &slips.SlipsController{Service: slipsService}
+	boatsService := &boats.BoatsService{}
+	boatsController := &boats.BoatsController{Service: boatsService}
 
 	userController.InitializeRoutes(app.Group("/users"))
 	slipsController.InitializeRoutes(app.Group("/slips"))
+	boatsController.InitializeRoutes(app.Group("/boats"))
 
 	if err := app.Listen("127.0.0.1:3000"); err != nil {
 		log.Fatalf("Failed to start server: %v", err)
