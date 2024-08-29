@@ -112,7 +112,6 @@ func ParseQueryParams(c *fiber.Ctx) (QueryParams, map[string]interface{}, error)
 		GlobalFilter: globalFilter,
 	}
 
-	// Prepare metadata based on parsed parameters (total can be added after query execution)
 	meta := map[string]interface{}{
 		"current_page": page,
 		"page_size":    pageSize,
