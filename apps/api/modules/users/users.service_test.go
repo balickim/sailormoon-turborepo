@@ -46,7 +46,7 @@ func TestCreateUser(t *testing.T) {
 	db := SetupTestDB(t)
 	defer db.Exec("DROP TABLE users")
 
-	userService := UserService{}
+	userService := UsersService{}
 
 	// Test creating a new user
 	user, err := userService.CreateUser("John Doe", "john@example.com", "securepassword")
@@ -68,7 +68,7 @@ func TestGetAllUsers(t *testing.T) {
 	db := SetupTestDB(t)
 	defer db.Exec("DROP TABLE users")
 
-	userService := UserService{}
+	userService := UsersService{}
 
 	// Create two users
 	_, err := userService.CreateUser("John Doe", "john@example.com", "securepassword")

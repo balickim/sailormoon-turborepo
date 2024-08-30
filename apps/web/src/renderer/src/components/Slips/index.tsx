@@ -1,12 +1,19 @@
 import { useState, useEffect, useMemo, useRef } from 'react'
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import SlipsApi from '@renderer/api/slips/routes'
 import { ColumnDef, ColumnFiltersState, SortingState } from '@tanstack/react-table'
 import { TableBase } from '../TableBase'
 import AddSlipDialog from './AddSlipDialog'
+import UsersApi from '@renderer/api/auth/routes'
 
 export function Slips() {
   const slipsApi = new SlipsApi()
+  const usersApi = new UsersApi()
+
+  const [credentials] = useState({
+    email: 'john@example.com',
+    password: 'securepassword'
+  })
 
   const [sorting, setSorting] = useState<SortingState>([])
   const [pagination, setPagination] = useState({
@@ -42,6 +49,10 @@ export function Slips() {
       return slipsApi.getSlips(params)
     },
     refetchOnWindowFocus: true
+  })
+
+  const mutation = useMutation({
+    mutationFn: usersApi.login
   })
 
   const defaultColumns = useMemo<ColumnDef<unknown>[]>(
@@ -149,6 +160,9 @@ export function Slips() {
 
   return (
     <>
+      <button className="btn btn-primary" onClick={() => mutation.mutate(credentials)}>
+        Login
+      </button>
       <button onClick={() => resetToDefaultOrder()}> Reset to default </button>
       <div>
         <input

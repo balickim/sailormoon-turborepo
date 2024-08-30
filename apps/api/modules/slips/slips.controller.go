@@ -1,18 +1,22 @@
 package slips
 
 import (
+	"sailormoon/backend/auth"
+	"sailormoon/backend/modules/users"
 	"sailormoon/backend/utils"
 
 	"github.com/gofiber/fiber/v2"
 )
 
 type SlipsController struct {
-	Service *SlipsService
+	Service      *SlipsService
+	UsersService *users.UsersService
 }
 
 func (controller *SlipsController) InitializeRoutes(router fiber.Router) {
 	router.Get(
 		"/",
+		auth.SessionAuthMiddleware(controller.UsersService),
 		controller.getSlips,
 	)
 }

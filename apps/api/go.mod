@@ -8,6 +8,7 @@ require (
 )
 
 require (
+	github.com/allegro/bigcache/v3 v3.1.0 // indirect
 	github.com/andybalholm/brotli v1.0.5 // indirect
 	github.com/bxcodec/faker/v4 v4.0.0-beta.3 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
